@@ -1,0 +1,16 @@
+pandas
+numpy
+scikit-learn
+xgboost
+networkx
+joblib
+matplotlib
+streamlit
+fastapi
+uvicorn[standard]
+pydantic
+starlette
+protobuf
+# Optional (for graph NN) - install only if you want to run GNN experiments:
+# torch
+# dgl  # or torch-geometric; see README for instructions
