@@ -25,7 +25,10 @@ elif use_default:
 elif os.path.exists(LOCAL_DATA_PATH):
     df = pd.read_csv(LOCAL_DATA_PATH)
 else:
-    st.warning("No dataset loaded. Upload a CSV or place it at data/raw/transaction_dataset.csv or enable default Kaggle path.")
+    st.warning(
+        "No dataset loaded. Upload a CSV or place it at data/raw/transaction_dataset.csv "
+        "or enable default Kaggle path."
+    )
     st.stop()
 
 st.write("Dataset preview:", df.head())
@@ -44,7 +47,11 @@ else:
         st.stop()
     model = RandomForestClassifier(n_estimators=200, random_state=42, n_jobs=-1)
     model.fit(X, y)
-    os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
+
+    # Only create directory if it's not empty
+    model_dir = os.path.dirname(MODEL_PATH)
+    if model_dir:
+        os.makedirs(model_dir, exist_ok=True)
     joblib.dump(model, MODEL_PATH)
     st.sidebar.success(f"Model trained and saved at {MODEL_PATH}")
 
@@ -62,15 +69,21 @@ if st.sidebar.button("Run inference"):
     st.write("Top flagged addresses:")
     st.dataframe(flagged.head(200))
 
-    st.download_button("Download flagged CSV", flagged.to_csv(index=False), file_name="flagged.csv")
+    st.download_button(
+        "Download flagged CSV", flagged.to_csv(index=False), file_name="flagged.csv"
+    )
 
     # Feature importance
     st.write("Feature importance (top 20):")
     try:
         importances = model.feature_importances_
-        feat_imp = sorted(zip(feature_names, importances), key=lambda x: x[1], reverse=True)[:20]
+        feat_imp = sorted(
+            zip(feature_names, importances), key=lambda x: x[1], reverse=True
+        )[:20]
         st.table(pd.DataFrame(feat_imp, columns=["Feature", "Importance"]))
     except Exception as e:
         st.write("Cannot display feature importance:", e)
 
-st.info("To serve as a production API, run: `uvicorn src.api:app --host 0.0.0.0 --port 8000`")
+st.info(
+    "To serve as a production API, run: `uvicorn src.api:app --host 0.0.0.0 --port 8000`"
+)
